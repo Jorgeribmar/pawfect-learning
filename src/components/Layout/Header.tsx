@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, IconButton, Avatar } from '@mui/material';
-import { Menu, Search, PawPrint } from 'lucide-react';
+import { Menu, PawPrint } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 
@@ -13,15 +13,11 @@ export const Header = () => {
         <IconButton edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
           <Menu />
         </IconButton>
-        
+
         <PawPrint className="mr-2" />
         <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
           PawfectLearning
         </Typography>
-
-        <IconButton color="inherit" sx={{ mr: 2 }}>
-          <Search />
-        </IconButton>
 
         {isAuthenticated ? (
           <>

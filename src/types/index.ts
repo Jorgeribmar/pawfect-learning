@@ -34,3 +34,9 @@ export interface Comment {
   content: string;
   createdAt: string;
 }
+
+export interface FilterOptions {
+  timeRange: 'all' | 'today' | 'week' | 'month';
+  sortBy: 'recent' | 'likes' | 'comments';
+  tag: string;
+}
