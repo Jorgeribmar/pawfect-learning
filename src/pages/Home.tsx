@@ -1,26 +1,33 @@
-import React, { useState } from 'react';
-import { Container, Typography, Box, Alert, Divider } from '@mui/material';
+import React from 'react';
+import { Container, Typography, Box, Alert, Divider, Button } from '@mui/material';
+import { RefreshCw } from 'lucide-react';
 import { PostCard } from '../components/Post/PostCard';
 import { SearchBar } from '../components/Search/SearchBar';
 import { SearchFilters } from '../components/Search/SearchFilters';
 import { useSearch } from '../hooks/useSearch';
 import { useFilteredPosts } from '../hooks/useFilteredPosts';
+import { useUrlFilters } from '../hooks/useUrlFilters';
 import { MOCK_POSTS } from '../data/mockData';
-import { FilterOptions } from '../types';
 
 export const Home = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState<FilterOptions>({
-    timeRange: 'all',
-    sortBy: 'recent',
-    tag: '',
-  });
+  const {
+    filters,
+    searchQuery,
+    updateFilters,
+    updateSearch,
+    clearFilters,
+  } = useUrlFilters();
 
   // First apply search
   const searchResults = useSearch(MOCK_POSTS, searchQuery);
   
   // Then apply filters to search results
   const filteredPosts = useFilteredPosts(searchResults, filters);
+
+  const hasActiveFilters = filters.timeRange !== 'all' || 
+    filters.sortBy !== 'recent' || 
+    filters.tag !== '' || 
+    searchQuery !== '';
 
   return (
     <Container maxWidth="md" sx={{ mt: 10 }}>
@@ -31,18 +38,31 @@ export const Home = () => {
         
         <SearchBar
           value={searchQuery}
-          onChange={setSearchQuery}
-          onClear={() => setSearchQuery('')}
+          onChange={updateSearch}
+          onClear={() => updateSearch('')}
         />
 
-        <SearchFilters 
-          filters={filters}
-          onFilterChange={setFilters}
-        />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          <SearchFilters 
+            filters={filters}
+            onFilterChange={updateFilters}
+          />
+          
+          {hasActiveFilters && (
+            <Button
+              startIcon={<RefreshCw size={16} />}
+              onClick={clearFilters}
+              size="small"
+              sx={{ ml: 'auto' }}
+            >
+              Clear Filters
+            </Button>
+          )}
+        </Box>
 
         <Divider sx={{ my: 2 }} />
 
-        {(searchQuery || filters.tag) && (
+        {hasActiveFilters && (
           <Box sx={{ mb: 2 }}>
             <Typography variant="body2" color="text.secondary">
               Found {filteredPosts.length} results
