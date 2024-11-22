@@ -12,10 +12,12 @@ import {
   Alert,
   IconButton,
   InputAdornment,
+  CircularProgress,
 } from '@mui/material';
-import { Eye, EyeOff, Github, Mail } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { MOCK_USERS } from '../../data/mockData';
+import { SocialLoginButtons } from '../../components/Auth/SocialLoginButtons';
 
 interface LocationState {
   from?: Location;
@@ -58,7 +60,7 @@ export const Login = () => {
     }
   };
 
-  const handleOAuthLogin = async (provider: string) => {
+  const handleSocialLogin = async (provider: string) => {
     setError('');
     setIsLoading(true);
 
@@ -77,7 +79,7 @@ export const Login = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 12 }}>
+    <Container maxWidth="sm" sx={{ mt: 12, mb: 6 }}>
       <Paper elevation={0} sx={{ p: 4, borderRadius: 2 }}>
         <Typography variant="h4" component="h1" align="center" gutterBottom>
           Welcome Back
@@ -92,6 +94,10 @@ export const Login = () => {
           </Alert>
         )}
 
+        <SocialLoginButtons onLogin={handleSocialLogin} isLoading={isLoading} />
+
+        <Divider sx={{ my: 3 }}>or sign in with email</Divider>
+
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <TextField
             margin="normal"
@@ -101,6 +107,7 @@ export const Login = () => {
             name="email"
             autoComplete="email"
             autoFocus
+            disabled={isLoading}
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
@@ -112,6 +119,7 @@ export const Login = () => {
             label="Password"
             type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
+            disabled={isLoading}
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             InputProps={{
@@ -121,6 +129,7 @@ export const Login = () => {
                     aria-label="toggle password visibility"
                     onClick={() => setShowPassword(!showPassword)}
                     edge="end"
+                    disabled={isLoading}
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </IconButton>
@@ -133,42 +142,28 @@ export const Login = () => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 2, height: 44 }}
             disabled={isLoading}
           >
-            Sign In
+            {isLoading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Sign In'
+            )}
           </Button>
+
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Link href="#" variant="body2" color="primary">
+              Forgot password?
+            </Link>
+            <Typography variant="body2" color="text.secondary">
+              Don't have an account?{' '}
+              <Link component={RouterLink} to="/register" color="primary">
+                Sign up
+              </Link>
+            </Typography>
+          </Box>
         </Box>
-
-        <Divider sx={{ my: 3 }}>or continue with</Divider>
-
-        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-          <Button
-            fullWidth
-            variant="outlined"
-            startIcon={<Mail />}
-            onClick={() => handleOAuthLogin('Google')}
-            disabled={isLoading}
-          >
-            Google
-          </Button>
-          <Button
-            fullWidth
-            variant="outlined"
-            startIcon={<Github />}
-            onClick={() => handleOAuthLogin('GitHub')}
-            disabled={isLoading}
-          >
-            GitHub
-          </Button>
-        </Box>
-
-        <Typography variant="body2" align="center" color="text.secondary">
-          Don't have an account?{' '}
-          <Link component={RouterLink} to="/register" color="primary">
-            Sign up
-          </Link>
-        </Typography>
       </Paper>
     </Container>
   );

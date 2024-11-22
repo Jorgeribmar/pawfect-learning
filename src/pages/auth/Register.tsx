@@ -14,10 +14,12 @@ import {
   InputAdornment,
   FormControlLabel,
   Checkbox,
+  CircularProgress,
 } from '@mui/material';
-import { Eye, EyeOff, Github, Mail } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { MOCK_USERS } from '../../data/mockData';
+import { SocialLoginButtons } from '../../components/Auth/SocialLoginButtons';
 
 export const Register = () => {
   const navigate = useNavigate();
@@ -35,13 +37,13 @@ export const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setIsLoading(true);
 
     if (!formData.agreeToTerms) {
       setError('Please agree to the Terms of Service and Privacy Policy');
-      setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
 
     try {
       // Simulate API call
@@ -68,7 +70,7 @@ export const Register = () => {
     }
   };
 
-  const handleOAuthRegister = async (provider: string) => {
+  const handleSocialLogin = async (provider: string) => {
     setError('');
     setIsLoading(true);
 
@@ -87,7 +89,7 @@ export const Register = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 12 }}>
+    <Container maxWidth="sm" sx={{ mt: 12, mb: 6 }}>
       <Paper elevation={0} sx={{ p: 4, borderRadius: 2 }}>
         <Typography variant="h4" component="h1" align="center" gutterBottom>
           Create Account
@@ -102,6 +104,14 @@ export const Register = () => {
           </Alert>
         )}
 
+        <SocialLoginButtons 
+          onLogin={handleSocialLogin} 
+          isLoading={isLoading} 
+          isRegister={true} 
+        />
+
+        <Divider sx={{ my: 3 }}>or register with email</Divider>
+
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <TextField
             margin="normal"
@@ -111,6 +121,7 @@ export const Register = () => {
             name="name"
             autoComplete="name"
             autoFocus
+            disabled={isLoading}
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
@@ -121,6 +132,7 @@ export const Register = () => {
             label="Email Address"
             name="email"
             autoComplete="email"
+            disabled={isLoading}
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
@@ -132,6 +144,7 @@ export const Register = () => {
             label="Password"
             type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
+            disabled={isLoading}
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             InputProps={{
@@ -141,6 +154,7 @@ export const Register = () => {
                     aria-label="toggle password visibility"
                     onClick={() => setShowPassword(!showPassword)}
                     edge="end"
+                    disabled={isLoading}
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </IconButton>
@@ -155,6 +169,7 @@ export const Register = () => {
                 checked={formData.agreeToTerms}
                 onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
                 color="primary"
+                disabled={isLoading}
               />
             }
             label={
@@ -176,42 +191,23 @@ export const Register = () => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 2, height: 44 }}
             disabled={isLoading}
           >
-            Create Account
+            {isLoading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Create Account'
+            )}
           </Button>
+
+          <Typography variant="body2" align="center" color="text.secondary">
+            Already have an account?{' '}
+            <Link component={RouterLink} to="/login" color="primary">
+              Sign in
+            </Link>
+          </Typography>
         </Box>
-
-        <Divider sx={{ my: 3 }}>or register with</Divider>
-
-        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-          <Button
-            fullWidth
-            variant="outlined"
-            startIcon={<Mail />}
-            onClick={() => handleOAuthRegister('Google')}
-            disabled={isLoading}
-          >
-            Google
-          </Button>
-          <Button
-            fullWidth
-            variant="outlined"
-            startIcon={<Github />}
-            onClick={() => handleOAuthRegister('GitHub')}
-            disabled={isLoading}
-          >
-            GitHub
-          </Button>
-        </Box>
-
-        <Typography variant="body2" align="center" color="text.secondary">
-          Already have an account?{' '}
-          <Link component={RouterLink} to="/login" color="primary">
-            Sign in
-          </Link>
-        </Typography>
       </Paper>
     </Container>
   );
