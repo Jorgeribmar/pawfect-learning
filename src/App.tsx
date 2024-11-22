@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { theme } from './theme';
 import { Header } from './components/Layout/Header';
 import { Home } from './pages/Home';
+import { Login } from './pages/auth/Login';
+import { Register } from './pages/auth/Register';
 
 const queryClient = new QueryClient();
 
@@ -17,6 +19,8 @@ function App() {
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
