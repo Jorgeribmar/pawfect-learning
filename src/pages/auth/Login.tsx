@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   Container,
   Paper,
@@ -17,8 +17,15 @@ import { Eye, EyeOff, Github, Mail } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { MOCK_USERS } from '../../data/mockData';
 
+interface LocationState {
+  from?: Location;
+}
+
 export const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as LocationState)?.from?.pathname || '/';
+  
   const login = useAuthStore((state) => state.login);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -43,7 +50,7 @@ export const Login = () => {
       }
 
       login(user);
-      navigate('/');
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -61,7 +68,7 @@ export const Login = () => {
       
       const mockUser = MOCK_USERS[0];
       login(mockUser);
-      navigate('/');
+      navigate(from, { replace: true });
     } catch (err) {
       setError(`${provider} login failed`);
     } finally {
